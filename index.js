@@ -145,7 +145,9 @@ const parseResults = (resultsData) => {
   const delimiter = "#####"
   const results = resultsData.split("\r\n").filter((datum) => {
     console.log('datum',datum);
-    return Boolean(datum) ? datum : delimiter
+    const foo = Boolean(datum) ? datum : delimiter
+    console.log('foo',foo);
+    return foo;
   }).map((datum) => {
     console.log('datum',datum);
     return datum.split(' = ');
