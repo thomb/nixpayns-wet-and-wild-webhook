@@ -76,7 +76,7 @@ const startFight = async (fight) => {
   console.log('players',players);
   // const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
 
-  const result = childProcess.execFileSync(process.env.MUGEN, players, {
+  const result = childProcess.execFileSync(process.env.MUGEN, [], {
     execArgv: players,
   });
   console.log('result',result);
