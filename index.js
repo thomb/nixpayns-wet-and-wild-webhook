@@ -15,7 +15,6 @@ const client = createClient({
 });
 
 client.on("error", (err) => console.log("Redis Client Error", err));
-const publisher = client.duplicate()
 
 (async () => {
 
@@ -24,8 +23,6 @@ const publisher = client.duplicate()
   // TODO: On start up, get a list of `ready` fights
 
   await client.connect();
-
-  await publisher.connect();
 
   let isFightInProgress = false;
   await client.subscribe('mugen', async (messageString) => {
@@ -107,7 +104,7 @@ const startFight = async (fight) => {
     },
   };
 
-  await publisher.publish("mugen:request", JSON.stringify(message));
+  await client.publish("mugen:request", JSON.stringify(message));
 
 
    childProcess.execFileSync(process.env.MUGEN, args, {
