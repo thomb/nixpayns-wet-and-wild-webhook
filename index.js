@@ -146,7 +146,10 @@ const parseResults = (resultsData) => {
   const results = resultsData.split("\r\n").filter((datum) => {
     console.log('datum',datum);
     return Boolean(datum) ? datum : delimiter
-  }).map((datum) => datum.split('=').map((el) => el.trim()))
+  }).map((datum) => {
+    console.log('datum',datum);
+    return datum.split(' = ');
+  })
   console.log('results',results);
 
   // Find All Matches
