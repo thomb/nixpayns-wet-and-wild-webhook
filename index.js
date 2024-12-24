@@ -122,6 +122,7 @@ const startFight = async (fight) => {
       fight,
     },
   };
+  console.log('args',args);
 
   await publisher.publish("mugen:request", JSON.stringify(message));
 
