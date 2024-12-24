@@ -62,15 +62,18 @@ const startFight = async (fight) => {
   if (teamOne?.fighters?.length && teamTwo?.fighters?.length) {
     while (players.length < availableFighters.length) {
       // prettier-ignore
-      players.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}" -p${playerIndex}.ai 1`);
+      players.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}"`);
+      players.push(`-p${playerIndex}.ai 1`);
       playerIndex++;
       // prettier-ignore
-      players.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}" -p${playerIndex}.ai 1`);
+      players.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}"`);
+      players.push(`-p${playerIndex}.ai 1`);
       playerIndex++;
       fighterIndex++;
     }
   }
   players.push(`-rounds ${rounds}`);
+  console.log('players',players);
   // const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
 
   const result = childProcess.execFileSync(process.env.MUGEN, players);
