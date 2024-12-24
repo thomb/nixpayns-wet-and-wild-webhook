@@ -120,15 +120,14 @@ const startFight = async (fight) => {
   }
 
   // Set the fight to inprogress on the database
-  const message = {
+  const inProgressMessage = {
     messageType: "inProgress",
     payload: {
       fight,
     },
   };
-  console.log('args',args);
 
-  await publisher.publish("mugen:request", JSON.stringify(message));
+  await publisher.publish("mugen:request", JSON.stringify(inProgressMessage));
 
 
    childProcess.execFileSync(process.env.MUGEN, args, {
@@ -136,8 +135,20 @@ const startFight = async (fight) => {
     windowsVerbatimArguments: true,
   });
 
+  // Parse the fight results
   const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
-  parseResults(results);
+  const resultData = parseResults(results);
+  const resultsMessage = {
+    messageType: "results",
+    payload: {
+      fight,
+      resultData,
+    },
+  };
+
+  console.log('resultsMessage',resultsMessage);
+
+  await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
 
 }
 
@@ -147,38 +158,29 @@ const parseResults = (resultsData) => {
     if (!Boolean(datum)) return delimiter;
     return datum.split(' = ');
   })
-  console.log('results',results);
 
-  // Find All Matches
+  const winners = {};
 
-  /*
-  const matchData = {};
-  let needsMatch = true;
-  let currentMatch;
-  let currentRound
-  let currentRoundNumber = 1;
-  results.forEach((item, index) =>{ 
-    if (needsMatch) currentMatch = item[0];
-    if (item[0] === delimiter) {
-      needsMatch = true;
-      currentRound = 1;
-      return;
+  results.forEach((item) =>{ 
+    if (item[0] === 'winningteam') {
+      if (!winners[item[0]]) {
+        winners[item[0]] = 0;
+      }
+      winners[item[0]]++;
     }
-
-    if (!matchData[currentMatch]) {
-        matchData[currentMatch] = {
-          matchWinners: [],
-          roundData: {}
-        }
-    };
-
-    if (item[0] === `${currentMatch.replace(']', '')} Round ${currentRoundNumber}]`)
-
-
-
-
   })
-      */
 
-  // Find all Rounds for all matches
+  let winningTeam;
+  const wins = 0;
+  Object.keys(winners).forEach((team) => {
+    if (winners[team] > wins) {
+      winningTeam = team;
+      wins = winners[team];
+    }
+  });
+
+  return {
+    winningTeam,
+    rawResults: results
+  };
 }
