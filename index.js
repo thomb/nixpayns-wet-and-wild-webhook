@@ -143,13 +143,8 @@ const startFight = async (fight) => {
 
 const parseResults = (resultsData) => {
   const delimiter = "#####"
-  const results = resultsData.split("\r\n").filter((datum) => {
-    console.log('datum',datum);
-    const foo = Boolean(datum) ? datum : delimiter
-    console.log('foo',foo);
-    return foo;
-  }).map((datum) => {
-    console.log('datum',datum);
+  const results = resultsData.split("\r\n").map((datum) => {
+    if (!Boolean(datum)) return delimiter;
     return datum.split(' = ');
   })
   console.log('results',results);
