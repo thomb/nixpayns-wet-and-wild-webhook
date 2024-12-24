@@ -182,7 +182,7 @@ const parseResults = (resultsData) => {
   })
 
   let winningTeam;
-  const wins = 0;
+  let wins = 0;
   Object.keys(winners).forEach((team) => {
     if (winners[team] > wins) {
       winningTeam = team;
