@@ -143,7 +143,10 @@ const startFight = async (fight) => {
 
 const parseResults = (resultsData) => {
   const delimiter = "#####"
-  const results = resultsData.split("\r\n").filter((datum) => Boolean(datum) ? datum : delimiter).map((datum) => datum.split('=').map((el) => el.trim()))
+  const results = resultsData.split("\r\n").filter((datum) => {
+    console.log('datum',datum);
+    return Boolean(datum) ? datum : delimiter
+  }).map((datum) => datum.split('=').map((el) => el.trim()))
   console.log('results',results);
 
   // Find All Matches
