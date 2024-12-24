@@ -32,7 +32,6 @@ publisher.on("error", (err) => console.log("Redis publisher Error", err));
 (async () => {
 
 
-  const fightQueue = [];
   // TODO: On start up, get a list of `ready` fights
 
   // await publisher.connect();
@@ -49,14 +48,11 @@ publisher.on("error", (err) => console.log("Redis publisher Error", err));
           };
 
           if (isFightInProgress) {
-            fightQueue.push(message);
+            console.warn(`A fight is currently in progress, this fight will be discarded: ${JSON.stringify(message)}`)
           }
           isFightInProgress = true;
           await processFight(message.payload.fights);
 
-          for await (const message of fightQueue) {
-            await processFight(message.payload.fights);
-          }
           isFightInProgress = false;
           break;
         default: 
