@@ -174,10 +174,10 @@ const parseResults = (resultsData) => {
 
   results.forEach((item) =>{ 
     if (item[0] === 'winningteam') {
-      if (!winners[item[0]]) {
-        winners[item[0]] = 0;
+      if (!winners[item[1]]) {
+        winners[item[1]] = 0;
       }
-      winners[item[0]]++;
+      winners[item[1]]++;
     }
   })
 
