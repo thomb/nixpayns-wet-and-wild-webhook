@@ -1,24 +1,33 @@
 require('dotenv').config();
-
+const path = require('path');
+const fs = require('fs');
 const createClient = require('redis').createClient;
 const childProcess = require("child_process");
 
 
+const client = createClient({
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT || "0"),
+  },
+});
+
+client.on("error", (err) => console.log("Redis Client Error", err));
+const publisher = client.duplicate()
+
 (async () => {
 
-  const client = createClient({
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT || "0"),
-    },
-  });
 
-  client.on("error", (err) => console.log("Redis Client Error", err));
+  const fightQueue = [];
+  // TODO: On start up, get a list of `ready` fights
+
   await client.connect();
 
+  await publisher.connect();
 
+  let isFightInProgress = false;
   await client.subscribe('mugen', async (messageString) => {
     try {
       const message = JSON.parse(messageString);
@@ -28,9 +37,16 @@ const childProcess = require("child_process");
             throw new Error('Payload contained no fights');
           };
 
-          for await (const fight of message.payload.fights) {
-            await startFight(fight);
+          if (isFightInProgress) {
+            fightQueue.push(message);
           }
+          isFightInProgress = true;
+          await processFight(message.payload.fights);
+
+          for await (const message of fightQueue) {
+            await processFight(message.payload.fights);
+          }
+          isFightInProgress = false;
           break;
         default: 
           console.log(`${message.messageType} is not supported`)
@@ -41,6 +57,13 @@ const childProcess = require("child_process");
     }
   });
 })();
+
+
+const processFight = async (fights) => {
+  for await (const fight of fights) {
+    await startFight(fight);
+  }
+}
 
 
 const startFight = async (fight) => {
@@ -54,30 +77,46 @@ const startFight = async (fight) => {
   if (!id) {
     console.warn('Fight has no ID, results will not be tracked');
   }
-  const players = [];
+  const args = [];
   let availableFighters = [...teamOne.fighters, ...teamTwo.fighters];
   let playerIndex = 1;
   let fighterIndex = 0;
 
   if (teamOne?.fighters?.length && teamTwo?.fighters?.length) {
-    while (players.length < availableFighters.length) {
+    while (args.length < availableFighters.length) {
       // prettier-ignore
-      players.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}"`);
-      players.push(`-p${playerIndex}.ai 1`);
+      args.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}"`);
+      args.push(`-p${playerIndex}.ai 1`);
       playerIndex++;
       // prettier-ignore
-      players.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}"`);
-      players.push(`-p${playerIndex}.ai 1`);
+      args.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}"`);
+      args.push(`-p${playerIndex}.ai 1`);
       playerIndex++;
       fighterIndex++;
     }
   }
-  players.push(`-rounds ${rounds}`);
-  console.log('players',players);
+  args.push(`-rounds ${rounds}`);
+  const logLocation  = path.join(process.env.MUGEN_PATH, 'results.log');
+  args.push(`-l ${logLocation}`)
 
-  const result = childProcess.execFileSync(process.env.MUGEN, players, {
+  // Set the fight to inprogress on the database
+  const message = {
+    messageType: "inProgress",
+    payload: {
+      fight,
+    },
+  };
+
+  await publisher.publish("mugen:request", JSON.stringify(message));
+
+
+   childProcess.execFileSync(process.env.MUGEN, args, {
     cwd: process.env.MUGEN_PATH,
     windowsVerbatimArguments: true,
   });
-  console.log('result',result);
+
+  const results = fs.readFileSync(logLocation, "utf8");
+  console.log('results',results);
+  console.log('results',results.split("\r\n?|\n"));
+
 }
