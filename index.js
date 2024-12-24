@@ -111,6 +111,9 @@ const startFight = async (fight) => {
   }
   const logLocation = 'results.log';
   args.push(`-log ${logLocation}`)
+  if (process.env.NOSOUND === "1") {
+    args.push(`-nosound`);
+  }
 
   // Set the fight to inprogress on the database
   const message = {
