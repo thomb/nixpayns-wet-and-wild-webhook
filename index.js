@@ -91,7 +91,6 @@ const startFight = async (fight) => {
   const args = [];
   const players = [];
   let availableFighters = [...teamOne.fighters, ...teamTwo.fighters];
-  console.log('availableFighters',availableFighters);
   let playerIndex = 1;
   let fighterIndex = 0;
 
@@ -143,12 +142,40 @@ const startFight = async (fight) => {
 }
 
 const parseResults = (resultsData) => {
-  const results = resultsData.split("\r\n").filter((datum) => Boolean(datum)).map((datum) => datum.split('=').map((el) => el.trim()))
+  const delimiter = "#####"
+  const results = resultsData.split("\r\n").filter((datum) => Boolean(datum) ? datum : delimiter).map((datum) => datum.split('=').map((el) => el.trim()))
   console.log('results',results);
 
-  const matchData = {};
-  let matchNumber = 1;
   // Find All Matches
+
+  /*
+  const matchData = {};
+  let needsMatch = true;
+  let currentMatch;
+  let currentRound
+  let currentRoundNumber = 1;
+  results.forEach((item, index) =>{ 
+    if (needsMatch) currentMatch = item[0];
+    if (item[0] === delimiter) {
+      needsMatch = true;
+      currentRound = 1;
+      return;
+    }
+
+    if (!matchData[currentMatch]) {
+        matchData[currentMatch] = {
+          matchWinners: [],
+          roundData: {}
+        }
+    };
+
+    if (item[0] === `${currentMatch.replace(']', '')} Round ${currentRoundNumber}]`)
+
+
+
+
+  })
+      */
 
   // Find all Rounds for all matches
 }
