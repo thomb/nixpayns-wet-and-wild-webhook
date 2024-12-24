@@ -5,7 +5,7 @@ const createClient = require('redis').createClient;
 const childProcess = require("child_process");
 
 
-const client = createClient({
+const subscriber = createClient({
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PASSWORD,
   socket: {
@@ -14,7 +14,18 @@ const client = createClient({
   },
 });
 
-client.on("error", (err) => console.log("Redis Client Error", err));
+subscriber.on("error", (err) => console.log("Redis subscriber Error", err));
+
+const publisher = createClient({
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT || "0"),
+  },
+});
+
+publisher.on("error", (err) => console.log("Redis publisher Error", err));
 
 (async () => {
 
@@ -22,10 +33,11 @@ client.on("error", (err) => console.log("Redis Client Error", err));
   const fightQueue = [];
   // TODO: On start up, get a list of `ready` fights
 
-  await client.connect();
+  await publisher.connect();
+  await subscriber.connect();
 
   let isFightInProgress = false;
-  await client.subscribe('mugen', async (messageString) => {
+  await subscriber.subscribe('mugen', async (messageString) => {
     try {
       const message = JSON.parse(messageString);
       switch (message.messageType) {
@@ -104,7 +116,7 @@ const startFight = async (fight) => {
     },
   };
 
-  await client.publish("mugen:request", JSON.stringify(message));
+  await publisher.publish("mugen:request", JSON.stringify(message));
 
 
    childProcess.execFileSync(process.env.MUGEN, args, {
