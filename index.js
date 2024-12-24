@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const createClient = require('redis').createClient;
-const childProcess = require("child_process")
+const childProcess = require("child_process");
 
 
 (async () => {
@@ -28,7 +28,7 @@ const childProcess = require("child_process")
             throw new Error('Payload contained no fights');
           };
 
-          for await (const fight of message.fights) {
+          for await (const fight of message.payload.fights) {
             await startFight(fight);
           }
           break;
