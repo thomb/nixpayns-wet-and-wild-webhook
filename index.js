@@ -83,24 +83,29 @@ const startFight = async (fight) => {
     teamOne,
     teamTwo,
   } = fight;
+  console.log('fight',fight);
 
   if (!id) {
     console.warn('Fight has no ID, results will not be tracked');
   }
   const args = [];
+  const players = [];
   let availableFighters = [...teamOne.fighters, ...teamTwo.fighters];
+  console.log('availableFighters',availableFighters);
   let playerIndex = 1;
   let fighterIndex = 0;
 
   if (teamOne?.fighters?.length && teamTwo?.fighters?.length) {
-    while (args.length < availableFighters.length) {
+    while (players.length < availableFighters.length) {
       // prettier-ignore
       args.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}"`);
       args.push(`-p${playerIndex}.ai 1`);
+      players.push(1);
       playerIndex++;
       // prettier-ignore
       args.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}"`);
       args.push(`-p${playerIndex}.ai 1`);
+      players.push(1);
       playerIndex++;
       fighterIndex++;
     }
