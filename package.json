@@ -1,0 +1,27 @@
+{
+  "name": "nixpayns-wet-and-wild-webhook",
+  "version": "1.0.0",
+  "description": "A redis daemon for spawning MUGEN fights",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomb/nixpayns-wet-and-wild-webhook.git"
+  },
+  "keywords": [
+    "MUGEN",
+    "redis"
+  ],
+  "author": "thomb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thomb/nixpayns-wet-and-wild-webhook/issues"
+  },
+  "homepage": "https://github.com/thomb/nixpayns-wet-and-wild-webhook#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "redis": "^4.7.0"
+  }
+}
