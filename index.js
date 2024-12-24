@@ -74,11 +74,10 @@ const startFight = async (fight) => {
   }
   players.push(`-rounds ${rounds}`);
   console.log('players',players);
-  // const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
 
-  const result = childProcess.execFileSync(process.env.MUGEN, [], {
-    execArgv: players,
+  const result = childProcess.execFileSync(process.env.MUGEN, players, {
     cwd: process.env.MUGEN_PATH,
+    windowsVerbatimArguments: true,
   });
   console.log('result',result);
 }
