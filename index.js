@@ -77,10 +77,11 @@ const processFight = async (fights) => {
 
 const startFight = async (fight) => {
   const {
+    id,
+    rounds,
+    stage,
     teamOne,
     teamTwo,
-    rounds,
-    id
   } = fight;
 
   if (!id) {
@@ -105,8 +106,11 @@ const startFight = async (fight) => {
     }
   }
   args.push(`-rounds ${rounds}`);
-  const logLocation  = path.join(process.env.MUGEN_PATH, 'results.log');
-  args.push(`-l ${logLocation}`)
+  if (stage !== undefined) {
+    args.push(`-s ${stage}`);
+  }
+  const logLocation = 'results.log';
+  args.push(`-log ${logLocation}`)
 
   // Set the fight to inprogress on the database
   const message = {
