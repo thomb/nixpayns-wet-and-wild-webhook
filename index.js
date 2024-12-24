@@ -129,7 +129,17 @@ const startFight = async (fight) => {
   });
 
   const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
-  console.log('results',results);
-  console.log('results',results.split("\r\n?|\n"));
+  parseResults(results);
 
+}
+
+const parseResults = (resultsData) => {
+  const results = resultsData.split("\r\n").filter((datum) => Boolean(datum)).map((datum) => datum.split('=').map((el) => el.trim()))
+  console.log('results',results);
+
+  const matchData = {};
+  let matchNumber = 1;
+  // Find All Matches
+
+  // Find all Rounds for all matches
 }
