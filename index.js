@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const createClient = require('redis').createClient;
-const execSync = require("child_process").execSync;
+const childProcess = require("child_process")
 
 
 (async () => {
@@ -73,6 +73,6 @@ const startFight = async (fight) => {
   players.push(`-rounds ${rounds}`);
   // const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
 
-  const result = execSync(process.env.MUGEN, players)
+  const result = childProcess.execFileSync(process.env.MUGEN, players)
   console.log('result',result);
 }
