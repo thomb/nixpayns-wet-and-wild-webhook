@@ -31,6 +31,7 @@ const execSync = require("child_process").execSync;
           for await (const fight of message.fights) {
             await startFight(fight);
           }
+          break;
         default: 
           console.log(`${message.messageType} is not supported`)
       }
@@ -69,8 +70,9 @@ const startFight = async (fight) => {
       fighterIndex++;
     }
   }
-  const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
+  players.push(`-rounds ${rounds}`);
+  // const fightCommand = `"${process.env.MUGEN}" ${players.join(" ")} -rounds ${rounds}`;
 
-  const result = execSync(fightCommand);
+  const result = execSync(process.env.MUGEN, players)
   console.log('result',result);
 }
