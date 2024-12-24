@@ -16,6 +16,7 @@ const subscriber = createClient({
 
 subscriber.on("error", (err) => console.log("Redis subscriber Error", err));
 
+/*
 const publisher = createClient({
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PASSWORD,
@@ -26,6 +27,7 @@ const publisher = createClient({
 });
 
 publisher.on("error", (err) => console.log("Redis publisher Error", err));
+*/
 
 (async () => {
 
@@ -33,7 +35,7 @@ publisher.on("error", (err) => console.log("Redis publisher Error", err));
   const fightQueue = [];
   // TODO: On start up, get a list of `ready` fights
 
-  await publisher.connect();
+  // await publisher.connect();
   await subscriber.connect();
 
   let isFightInProgress = false;
@@ -127,7 +129,12 @@ const startFight = async (fight) => {
     },
   };
 
-  await publisher.publish("mugen:request", JSON.stringify(inProgressMessage));
+  await fetch(`${process.env.REMOTE_HOST}`, {
+    method: "POST",
+    body: JSON.stringify(inProgressMessage),
+  });
+
+  // await publisher.publish("mugen:request", JSON.stringify(inProgressMessage));
 
 
    childProcess.execFileSync(process.env.MUGEN, args, {
@@ -148,7 +155,11 @@ const startFight = async (fight) => {
 
   console.log('resultsMessage',resultsMessage);
 
-  await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
+  await fetch(`${process.env.REMOTE_HOST}`, {
+    method: "POST",
+    body: JSON.stringify(resultsMessage),
+  });
+  // await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
 
 }
 
