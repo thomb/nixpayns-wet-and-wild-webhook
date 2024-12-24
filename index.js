@@ -128,7 +128,7 @@ const startFight = async (fight) => {
     windowsVerbatimArguments: true,
   });
 
-  const results = fs.readFileSync(logLocation, "utf8");
+  const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
   console.log('results',results);
   console.log('results',results.split("\r\n?|\n"));
 
