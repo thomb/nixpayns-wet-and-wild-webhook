@@ -78,7 +78,7 @@ const startFight = async (fight) => {
 
   const result = childProcess.execFileSync(process.env.MUGEN, [], {
     execArgv: players,
-    execPath: process.env.MUGEN_PATH,
+    cwd: process.env.MUGEN_PATH,
   });
   console.log('result',result);
 }
