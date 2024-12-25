@@ -5,7 +5,9 @@ The name of this repo is a lie, it is just alliterative and amuses me
 What this actually is, is a Redis subscriber designed for spawning MUGEN 1.0 fights. Written in Javascript for ease of use by novices, but written with
 some typescript support in mind.
 
-This listens to a redis topic for incoming fight requests and will spawn a MUGEN instance for each fight. When the fight is triggered, a POST request
+This listens to a redis topic for incoming fight requests and will sequentially spawn a MUGEN instance for each fight listed in a message. If a fight is ongoing, any messages will be discarded. 
+
+When the fight is triggered, a POST request
 is sent in order to be able to track that a fight is in progress. Upon fight completion the result log is parsed and a POST request is sent with the
 data (including lightly parsed raw results data for processing as needed).
 
@@ -56,7 +58,17 @@ about the result of the fight can be determined from the raw data, but for now t
   * Allow for points to be wagered on a given fight via commands
 * Optional delay before starting a fight
   * i.e. to allow for the points to be wagered
+* Handling of messages while a fight is progress
+  * Instead of throwing away messages recieved while a fight is ongoing, add them to a queue to be processed once the list of ongoing fights is complete (?)
+  * Not sure about this atm.
+    
 
 ### NOT IN SCOPE
 * Tournaments
   * Any implementation of a "Tournament" concept will be handled on the host side based on recieving a `results` message
+
+
+
+
+### BUTT COVERING
+* I wrote this in a couple hours today. Code's kinda sloppy. YMMV
