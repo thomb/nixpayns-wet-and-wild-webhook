@@ -45,7 +45,7 @@ Please refernence the provided `types.d.ts` for the message structures.
 `TResultsMessage` is dispatched when the fight completes.
 
 #### NOTE on `TResultsMessage`
-This will return the `winningteam` as parsed directly from the mugen log. It has no concept of which of the teams in a `TBattle`. The source `TBattle`
+This will return the `winningteam` as parsed directly from the mugen log. It has no concept of teams as specified in a `TBattle`. The source `TBattle`
 is dispatched along with the results message so that this can be reconciled on the host. This is largely just a convenience and might be deprecate
 as...
 
