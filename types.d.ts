@@ -1,6 +1,6 @@
-enum EMessageType {
-  "fight" = "fight"
-  "inprogress" = "inprogress"
+export enum EMessageType {
+  "fight" = "fight",
+  "inprogress" = "inprogress",
   "results" = "results"
 }
 
