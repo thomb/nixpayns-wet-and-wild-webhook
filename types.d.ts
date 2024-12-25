@@ -1,6 +1,6 @@
 enum EMessageType {
-  "fight" = "fight",
-  "inprogress" = "inprogress",
+  "fight" = "fight"
+  "inprogress" = "inprogress"
   "results" = "results"
 }
 
@@ -10,12 +10,6 @@ type TMessage<T> = {
 }
 
 type TFighter = {
-  name: string;
-  record?: TFighterRecord;
-  id: number;
-};
-
-type TStage = {
   name: string;
   id: number;
 };
@@ -33,7 +27,7 @@ type TBattle = {
   inProgress?: boolean;
   completed?: boolean;
   isReady?: boolean;
-  stage: string;
+  stage?: string;
 };
 
 
@@ -41,6 +35,7 @@ type TBattle = {
 type TIncomingFightMessage = TMessage<{fights: TBattle[]}>
 
 type TInProgressMessage = TMessage<{fight: TBattle}>
+
 type TResultsMessage = TMessage<{
   fight: TBattle;
   resultData: {
