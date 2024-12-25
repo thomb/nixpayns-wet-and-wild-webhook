@@ -15,7 +15,7 @@
     "redis"
   ],
   "author": "thomb",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/thomb/nixpayns-wet-and-wild-webhook/issues"
   },
