@@ -14,6 +14,14 @@ const subscriber = createClient({
   },
 });
 
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+
 subscriber.on("error", (err) => console.log("Redis subscriber Error", err));
 
 /*
@@ -109,7 +117,7 @@ const startFight = async (fight) => {
   }
   args.push(`-rounds ${rounds}`);
   if (stage !== undefined) {
-    args.push(`-s ${stage}`);
+    args.push(`-s "${stage}"`);
   }
   const logLocation = 'results.log';
   args.push(`-log ${logLocation}`)
@@ -129,6 +137,13 @@ const startFight = async (fight) => {
     method: "POST",
     body: JSON.stringify(inProgressMessage),
   });
+
+  const delay = parseInt(process.env.FIGHT_START_DELAY_MS || '0');
+  if (delay)  {
+    // TODO: Do stuff like publish a notice to twitch that betting is open etc etc
+    await sleep(delay);
+  }
+
 
   // await publisher.publish("mugen:request", JSON.stringify(inProgressMessage));
 
