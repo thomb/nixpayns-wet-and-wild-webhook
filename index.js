@@ -172,10 +172,7 @@ const startFight = async (fight) => {
   }
   const resultsMessage = {
     messageType: "results",
-    payload: {
-      fight,
-      resultData,
-    },
+    payload,
   };
 
   console.log('resultsMessage',resultsMessage);
