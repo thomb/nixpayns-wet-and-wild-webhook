@@ -119,8 +119,10 @@ const startFight = async (fight) => {
   if (stage !== undefined) {
     args.push(`-s "${stage}"`);
   }
-  const logLocation = 'results.log';
-  args.push(`-log ${logLocation}`)
+  if (process.env.DISABLE_LOGGING === "0") {
+    const logLocation = 'results.log';
+    args.push(`-log ${logLocation}`)
+  }
   if (process.env.NOSOUND === "1") {
     args.push(`-nosound`);
   }
@@ -153,9 +155,19 @@ const startFight = async (fight) => {
     windowsVerbatimArguments: true,
   });
 
-  // Parse the fight results
-  const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
-  const resultData = parseResults(results);
+  const payload = {
+      fight,
+      resultData: {
+        winningteam: 0,
+        rawResults: []
+      }
+  }
+  if (process.env.DISABLE_LOGGING === "0") {
+    // Parse the fight results
+    const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
+    const resultData = parseResults(results);
+    payload.resultData = resultData;
+  } 
   const resultsMessage = {
     messageType: "results",
     payload: {
@@ -163,6 +175,7 @@ const startFight = async (fight) => {
       resultData,
     },
   };
+}
 
   console.log('resultsMessage',resultsMessage);
 
@@ -172,7 +185,6 @@ const startFight = async (fight) => {
   });
   // await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
 
-}
 
 const parseResults = (resultsData) => {
   const delimiter = "#####"
