@@ -167,7 +167,9 @@ const startFight = async (fight) => {
     const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
     const resultData = parseResults(results);
     payload.resultData = resultData;
-  } 
+  } else {
+    console.log('Logging disabled, will be tracked as a draw');
+  }
   const resultsMessage = {
     messageType: "results",
     payload: {
@@ -175,7 +177,6 @@ const startFight = async (fight) => {
       resultData,
     },
   };
-}
 
   console.log('resultsMessage',resultsMessage);
 
@@ -184,6 +185,7 @@ const startFight = async (fight) => {
     body: JSON.stringify(resultsMessage),
   });
   // await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
+}
 
 
 const parseResults = (resultsData) => {
