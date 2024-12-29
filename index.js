@@ -1,4 +1,5 @@
 require('dotenv').config();
+const luaDebugTable = require('./luaDebugTableToJson');
 const path = require('path');
 const fs = require('fs');
 const createClient = require('redis').createClient;
@@ -24,25 +25,10 @@ function sleep(ms) {
 
 subscriber.on("error", (err) => console.log("Redis subscriber Error", err));
 
-/*
-const publisher = createClient({
-  username: process.env.REDIS_USERNAME,
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT || "0"),
-  },
-});
-
-publisher.on("error", (err) => console.log("Redis publisher Error", err));
-*/
-
 (async () => {
 
 
-  // TODO: On start up, get a list of `ready` fights
 
-  // await publisher.connect();
   await subscriber.connect();
 
   let isFightInProgress = false;
@@ -119,8 +105,9 @@ const startFight = async (fight) => {
   if (stage !== undefined) {
     args.push(`-s "${stage}"`);
   }
+
+  const logLocation = 'results.log';
   if (process.env.DISABLE_LOGGING === "0") {
-    const logLocation = 'results.log';
     args.push(`-log ${logLocation}`)
   }
   if (process.env.NOSOUND === "1") {
@@ -147,11 +134,10 @@ const startFight = async (fight) => {
   }
 
 
-  // await publisher.publish("mugen:request", JSON.stringify(inProgressMessage));
-
 
    childProcess.execFileSync(process.env.MUGEN, args, {
     cwd: process.env.MUGEN_PATH,
+    shell: true,
     windowsVerbatimArguments: true,
   });
 
@@ -181,36 +167,12 @@ const startFight = async (fight) => {
     method: "POST",
     body: JSON.stringify(resultsMessage),
   });
-  // await publisher.publish("mugen:request", JSON.stringify(resultsMessage));
 }
 
 
 const parseResults = (resultsData) => {
-  const delimiter = "#####"
-  const results = resultsData.split("\r\n").map((datum) => {
-    if (!Boolean(datum)) return delimiter;
-    return datum.split(' = ');
-  })
-
-  const winners = {};
-
-  results.forEach((item) =>{ 
-    if (item[0] === 'winningteam') {
-      if (!winners[item[1]]) {
-        winners[item[1]] = 0;
-      }
-      winners[item[1]]++;
-    }
-  })
-
-  let winningTeam;
-  let wins = 0;
-  Object.keys(winners).forEach((team) => {
-    if (winners[team] > wins) {
-      winningTeam = team;
-      wins = winners[team];
-    }
-  });
+  const results  = luaDebugTable.luaDebugTableToJson(resultsData);
+  const winningTeam = results.winTeam;
 
   return {
     winningTeam,
