@@ -1,5 +1,7 @@
 require('dotenv').config();
+
 const luaDebugTable = require('./luaDebugTableToJson');
+const streamElements = require('./streamElements');
 const path = require('path');
 const fs = require('fs');
 const createClient = require('redis').createClient;
@@ -127,9 +129,16 @@ const startFight = async (fight) => {
     body: JSON.stringify(inProgressMessage),
   });
 
+  let contestData 
+  if (process.env.STREAM_ELEMENTS_JWT) {
+    contestData = await streamElements.startFightBetting(fight);
+
+  }
+
   const delay = parseInt(process.env.FIGHT_START_DELAY_MS || '0');
   if (delay)  {
     // TODO: Do stuff like publish a notice to twitch that betting is open etc etc
+    console.log(`Waiting ${delay} ms to start fight`);
     await sleep(delay);
   }
 
@@ -153,6 +162,14 @@ const startFight = async (fight) => {
     const results = fs.readFileSync(path.join(process.env.MUGEN_PATH, logLocation), "utf8");
     const resultData = parseResults(results);
     payload.resultData = resultData;
+    if (process.env.STREAM_ELEMENTS_JWT && contestData !== undefined) {
+      console.log('contestData.options',contestData.options);
+      console.log('resultData.winningTeam',resultData.winningTeam);
+      const winnerId = contestData.options[resultData.winningTeam]._id;
+      await streamElements.selectWinner(contestData.channelId, contestData.contestId, winnerId);
+    }
+
+
   } else {
     console.log('Logging disabled, will be tracked as a draw');
   }
