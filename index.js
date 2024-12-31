@@ -34,7 +34,7 @@ subscriber.on("error", (err) => console.log("Redis subscriber Error", err));
   await subscriber.connect();
 
   let isFightInProgress = false;
-  await subscriber.subscribe('mugen', async (messageString) => {
+  await subscriber.subscribe(process.env.REDIS_TOPIC_NAME || 'mugen', async (messageString) => {
     try {
       const message = JSON.parse(messageString);
       switch (message.messageType) {
