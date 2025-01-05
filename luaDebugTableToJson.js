@@ -8,8 +8,17 @@ const luaDebugTableToJson = (luaString) => {
   // Replace `=>` with `:` for key-value pairs
   luaString = luaString.replace(/=>/g, ":");
 
+  const initLise = luaString.split('\n');
+  const cleaned = initLise.map((line) => { 
+    return line.trim().replace(/^\[([^\]]+)\]/g, '"$1"');;
+  })
+  luaString = cleaned.join('\n')
+
+  console.log('luaString',luaString);
   // Normalize Lua table keys (e.g., [key] => key:)
-  luaString = luaString.replace(/\[([^\]]+)\]/g, '"$1"');
+  /*
+  luaString = luaString.replace(/^\[([^\]]+)\]/g, '"$1"');
+  */
 
   luaString = luaString.replace(/,(\s*[}\]])/g, "$1");
   
