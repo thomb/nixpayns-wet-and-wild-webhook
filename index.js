@@ -92,12 +92,12 @@ const startFight = async (fight) => {
     while (players.length < availableFighters.length) {
       // prettier-ignore
       args.push(`-p${playerIndex} "${teamOne.fighters[fighterIndex].name}"`);
-      args.push(`-p${playerIndex}.ai 1`);
+      args.push(`-p${playerIndex}.ai ${process.env.AI_LEVEL}`);
       players.push(1);
       playerIndex++;
       // prettier-ignore
       args.push(`-p${playerIndex} "${teamTwo.fighters[fighterIndex].name}"`);
-      args.push(`-p${playerIndex}.ai 1`);
+      args.push(`-p${playerIndex}.ai ${process.env.AI_LEVEL}`);
       players.push(1);
       playerIndex++;
       fighterIndex++;
